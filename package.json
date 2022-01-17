@@ -1,0 +1,17 @@
+{
+  "name": "node-red-icecast-player",
+  "version": "1.0.0",
+  "description": "Supports icecast streams to be played back with default speaker",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "nodemon src/index.js localhost 8080"
+  },
+  "dependencies": {
+    "@suldashi/lame": "^1.2.5",
+    "icecast-parser": "3.2.1",
+    "speaker": "^0.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "1.18.4"
+  }
+}
