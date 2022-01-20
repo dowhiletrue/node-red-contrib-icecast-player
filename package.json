@@ -1,5 +1,5 @@
 {
-  "name": "node-red-icecast-player",
+  "name": "node-red-contrib-icecast-player",
   "version": "1.0.0",
   "description": "Supports icecast streams to be played back with default speaker",
   "main": "src/index.js",
@@ -13,5 +13,10 @@
   },
   "devDependencies": {
     "nodemon": "1.18.4"
+  },
+  "node-red": {
+    "nodes": {
+      "icecast-player": "src/nodes/icecast-player.js"
+    }
   }
 }

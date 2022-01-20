@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    RED.nodes.registerType('icecast-player',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            url: {value:"", required:true}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "",
+        label: function() {
+            return this.url||"icecast-player";
+        }
+    });
+</script>
+<script type="text/x-red" data-template-name="icecast-player">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+     <div class="form-row">
+        <label for="node-input-url"><i class="icon-tag"></i>URL</label>
+        <input type="text" id="node-input-url" placeholder="http://stream.srg-ssr.ch/m/regi_be_fr_vs/mp3_128">
+    </div>
+</script>
+<script type="text/x-red" data-help-name="icecast-player">
+<p>Node to play icecast streams</p>
+</script>
