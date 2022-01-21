@@ -2,21 +2,45 @@ const Parser = require("icecast-parser");
 const lame = require("@suldashi/lame");
 const Speaker = require("speaker");
 module.exports = function (RED) {
+    "use strict";
+    const Parser = require("icecast-parser");
+    const lame = require('@suldashi/lame');
+    const Speaker = require('speaker');
+    const { pipeline } = require('stream');
+    console.log("export");
     function IcecastPlayer(config) {
         RED.nodes.createNode(this, config);
         this.url = config.url;
         const node = this;
-        const Parser = require("icecast-parser");
-        const lame = require('@suldashi/lame');
-        const Speaker = require('speaker');
-        const { pipeline } = require('stream');
 
-        let radioStation
+        console.log("IcecastPlayer");
+
+        RED.events.on("deploy", function(node) {
+            console.log("deploy");
+            stopStreaming();
+        });
+
+        function stopStreaming() {
+            console.log('stopping called in onclose');
+            if (!!node.stream) {
+                console.log('unpipe')
+                node.stream.emit('end');
+                node.stream.unpipe();
+                node.stream.destroy();
+                node.stream = null;
+            }
+        }
+
+        node.on('close', () => {
+            console.log("onclose");
+            stopStreaming();
+        });
+
         node.on('input', function (msg) {
-            if (!radioStation && msg.payload.action === "play") {
-                playing = true;
+            if (!node.stream && msg.payload.action === "play") {
                 if (!node.url) return new Error('URL not set!');
-                radioStation = new Parser({url: node.url, keepListen: true, autoUpdate: false});
+                const url = msg.payload.url? msg.payload.url : node.url
+                let radioStation = new Parser({url: url, keepListen: true, autoUpdate: false});
 
                 const decoder = new lame.Decoder();
 
@@ -27,6 +51,7 @@ module.exports = function (RED) {
                 });
 
                 radioStation.on('metadata', metadata => {
+                    node.status({fill:"green",shape:"dot",text:"playing" + (metadata.StreamTitle ? " " + metadata.StreamTitle : "")});
                     msg.payload = metadata;
                     node.send(msg);
 
@@ -50,13 +75,8 @@ module.exports = function (RED) {
                     });
                 });
             }
-            else if (msg.payload.action === 'stop' && !!node.stream) {
-                console.log('unpipe')
-                node.stream.emit('end');
-                node.stream.unpipe();
-                node.stream.destroy();
-                node.stream = null;
-                radioStation = null;
+            else if (msg.payload.action === 'stop') {
+                stopStreaming();
             }
         });
     }
