@@ -9,6 +9,8 @@ module.exports = function (RED) {
         const Parser = require("icecast-parser");
         const lame = require('@suldashi/lame');
         const Speaker = require('speaker');
+        const { pipeline } = require('stream');
+
         let radioStation
         node.on('input', function (msg) {
             if (!radioStation && msg.payload.action === "play") {
@@ -36,11 +38,21 @@ module.exports = function (RED) {
 
                 radioStation.on('stream', stream => {
                     node.stream = stream;
-                    stream.pipe(decoder).pipe(speaker)
+                    node.status({fill:"green",shape:"dot",text:"playing"});
+                    pipeline(stream, decoder, speaker, err => {
+                        if (err) {
+                            console.log('There is an error')
+                            node.status({fill:"red",shape:"ring",text:"error"});
+                        } else {
+                            console.log('pipeline successful')
+                            node.status({fill:"blue",shape:"ring",text:"stopped"});
+                        }
+                    });
                 });
             }
             else if (msg.payload.action === 'stop' && !!node.stream) {
                 console.log('unpipe')
+                node.stream.emit('end');
                 node.stream.unpipe();
                 node.stream.destroy();
                 node.stream = null;
