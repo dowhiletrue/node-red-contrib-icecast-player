@@ -1,0 +1,6 @@
+= Node-RED node for icecast
+This node is capable to stream from icecast server, play the stream on local audio interface and provide metadata.
+
+== Prerequisites
+Dev resource for asound is required by lame mp3 decoder
+`sudo apt install libasound2-dev`
