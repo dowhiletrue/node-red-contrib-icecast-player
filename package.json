@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@suldashi/lame": "^1.2.5",
-    "icecast-parser": "3.2.1",
+    "icecast-parser": "2.0.0",
     "speaker": "^0.5.2"
   },
   "devDependencies": {
